@@ -1,0 +1,49 @@
+data = Import["[...]/AimHeatmapData.txt", "Data"];
+data = Nest[Partition[#, 3] &, Flatten[data], 2];
+
+AimHeatmapData[data_] := Module[{
+   a1 = Normalize[data[[3]] - data[[1]]],
+   x1 = data[[3]],
+   x4 = data[[1]],
+   x5 = data[[2]],
+   a2, a3, x2, x3, A1, A2, t, i},
+  
+  a2 = Normalize[Append[{-a1[[2]], a1[[1]]}, 0]];
+  a3 = Normalize[Cross[a2, a1]];
+  x2 = x1 + a2;
+  x3 = x1 + a3;
+  
+  A1 = {{1, 1, 1, 
+     1}, #[[1]] & /@ {x1, x2, x3, x4}, #[[2]] & /@ {x1, x2, x3, 
+      x4}, #[[3]] & /@ {x1, x2, x3, x4}};
+  A2 = {{1, 1, 
+     1}, #[[1]] & /@ {x1, x2, x3}, #[[2]] & /@ {x1, x2, 
+      x3}, #[[3]] & /@ {x1, x2, x3}};
+  A2 = Transpose[
+    Append[Transpose@A2, {0, x5[[1]] - x4[[1]], x5[[2]] - x4[[2]], 
+      x5[[3]] - x4[[3]]}]];
+  t = -Det@A1/Det@A2;
+  i = x1 - {x4[[1]] + (x5[[1]] - x4[[1]]) t, 
+     x4[[2]] + (x5[[2]] - x4[[2]]) t, x4[[3]] + (x5[[3]] - x4[[3]]) t};
+  i = {Dot[i, a2], Dot[i, a3]}
+  ]
+  
+  a = 70;
+res = Select[
+   AimHeatmapData[#] & /@ 
+    data, -a < #[[1]] < a && -a < #[[2]] < a &];
+listPlot = 
+  ListPlot[res, PlotRange -> {{-a, a}, {-a, a}}, Frame -> True, 
+   PlotStyle -> {PointSize[0.004], Black}, AspectRatio -> 1, 
+   ImageSize -> 800];
+
+\[ScriptCapitalD] = SmoothKernelDistribution[res, "SheatherJones"];
+contour = 
+  ContourPlot[
+   Evaluate@Sqrt[PDF[\[ScriptCapitalD], {x, y}]], {x, -a, a}, {y, -a, 
+    a}, ImageSize -> 800, PlotRange -> Full, 
+   ColorFunction -> "Rainbow", Contours -> 10, 
+   PlotRange -> {{-a, a}, {-a, a}}, PlotPoints -> 100];
+
+p = Show[contour, listPlot] /. 
+  RGBColor[0.471412`, 0.108766`, 0.527016`] -> RGBColor[0, 0, 0]
