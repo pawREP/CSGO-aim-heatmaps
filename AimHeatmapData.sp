@@ -23,11 +23,6 @@ public OnPluginStart()
 	
 }
 
-public Action:LoadStuff(Handle:timer)
-{
-	PrintToServer("Loading stuff!");
-}
-
 public Action:StartRecording(client,args)
 {
 	HookEvent("player_death", AccountForPlayerdeath);
