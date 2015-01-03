@@ -6,7 +6,7 @@ public Plugin:info =
 {
 	name = "AimAccuracyData",
 	author = "PascalTheAnalyst",
-	description = "This script calculates and saves data which can be used to plot a heatmaps of the players aiming accuracy",
+	description = "This script calculates and saves data which can be used to plot heatmaps of the players aiming accuracy",
 	version = "2.0.8",
 	url = "reddit.com/u/PascalTheAnalyst"
 };
